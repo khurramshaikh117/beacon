@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Device;
 
 Route::get('/', function () {
     return view('welcome');
@@ -8,6 +9,6 @@ Route::get('/', function () {
 
 
 Route::get('/devices', function () {
-    $devices = \App\Models\Presence::all();
+    $devices = Device::orderBy('last_seen_at', 'desc')->get();
     return view('devices', compact('devices'));
 });
