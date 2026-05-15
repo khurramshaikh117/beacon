@@ -1,0 +1,34 @@
+:root {
+    --hrms-purple: #0F1F3D;
+    --hrms-purple-2: #7b68ee;
+}
+
+.hrms-login-bg {
+    background: linear-gradient(135deg, var(--hrms-purple) 0%, var(--hrms-purple-2) 100%);
+}
+.hrms-logo-circle { width: 64px; height: 64px; background: var(--hrms-purple); }
+.hrms-btn-primary { background: var(--hrms-purple); border-color: var(--hrms-purple); }
+.hrms-btn-primary:hover { background: #0F1F3D; border-color: #0F1F3D; }
+
+.hrms-sidebar {
+    width: 240px;
+    background: var(--hrms-purple);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+.hrms-sidebar .active-link { background: rgba(255,255,255,0.18); font-weight: 600; }
+
+.hrms-topbar { background: var(--hrms-purple); }
+.hrms-avatar { width: 36px; height: 36px; background: #fff; color: var(--hrms-purple); }
+
+.hrms-stat-icon { width: 48px; height: 48px; }
+.hrms-stat-purple { background: rgba(79,60,201,.12); color: var(--hrms-purple); }
+.hrms-stat-green  { background: rgba(40,167,69,.12); color: #28a745; }
+.hrms-stat-cyan   { background: rgba(23,162,184,.12); color: #17a2b8; }
+.hrms-stat-amber  { background: rgba(255,193,7,.18); color: #b8860b; }
+
+.hrms-emp-avatar { width: 36px; height: 36px; background: rgba(79,60,201,.12); color: var(--hrms-purple); }
+
+.page-item.active .page-link { background-color: var(--hrms-purple); border-color: var(--hrms-purple); }
+.page-link { color: var(--hrms-purple); }
