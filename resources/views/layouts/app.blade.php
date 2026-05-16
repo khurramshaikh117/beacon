@@ -21,9 +21,9 @@
                class="btn text-start text-white d-flex align-items-center {{ request()->routeIs('dashboard') ? 'active-link' : '' }}">
                 <i class="bi bi-speedometer2 me-2"></i> Dashboard
             </a>
-            <a href="{{ route('operations.index') }}"
-               class="btn text-start text-white d-flex align-items-center {{ request()->routeIs('operations.*') ? 'active-link' : '' }}">
-                <i class="bi bi-gear-wide-connected me-2"></i> Manage Devices
+            <a href="{{ route('devices.index') }}"
+                class="btn text-start text-white d-flex align-items-center {{ request()->routeIs('devices.*') ? 'active-link' : '' }}">
+                    <i class="bi bi-hdd-network me-2"></i> Manage Devices
             </a>
         </nav>
         <form method="POST" action="{{ route('logout') }}">
@@ -55,5 +55,6 @@
     </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  @stack('scripts')
 </body>
 </html>

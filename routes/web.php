@@ -1,32 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Device;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OperationsController;
-
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
-Route::get('/devices', function () {
-    $devices = Device::orderBy('last_seen_at', 'desc')->get();
-    return view('devices', compact('devices'));
-});
+use App\Http\Controllers\DevicesController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
-// Auth (session)
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::get('/login',  [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
+Route::get('/device-config/{uuid}', [DeviceConfigController::class, 'show']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+    Route::resource('devices', DevicesController::class);
     Route::prefix('operations')->name('operations.')->group(function () {
         Route::get('/',            [OperationsController::class, 'index'])->name('index');
         Route::get('/create',      [OperationsController::class, 'create'])->name('create');

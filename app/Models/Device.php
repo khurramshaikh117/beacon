@@ -8,8 +8,16 @@ class Device extends Model
 {
     protected $fillable = [
         'uuid',
-        'status',
+        'label',
+        'zone',
         'rssi',
+        'wifi_username',
+        'wifi_password',
+        'status',
         'last_seen_at',
+    ];
+
+    protected $casts = [
+        'last_seen_at' => 'datetime',
     ];
 }
