@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->uuid('user_uuid')->unique()->after('id');
+            if (!Schema::hasColumn('users', 'user_uuid')) {
+                $table->uuid('user_uuid')->nullable()->unique()->after('id');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('user_uuid');
+            if (Schema::hasColumn('users', 'user_uuid')) {
+                $table->dropColumn('user_uuid');
+            }
         });
     }
 };
