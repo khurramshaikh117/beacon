@@ -20,31 +20,33 @@ class PresenceController extends Controller
             'zone'   => 'nullable|string',
         ]);
 
-        $mobileUuid = $request->uuid;    // mobile iBeacon UUID = employee
-        $deviceUuid = $request->device;  // ESP32 UUID
+        $mobileUuid = $request->uuid;
+        $deviceUuid = $request->device;
         $event      = $request->event;
         $rssi       = $request->rssi;
         $zone       = $request->zone;
-        $status     = $event === 'IN' ? 1001 : 1002;
+        $status     = $event === 'IN' ? PresenceLog::STATUS_IN : PresenceLog::STATUS_OUT;
         $now        = Carbon::now();
 
-        // 1. Look up ESP32 device — get zone if not in payload
-        $device = Device::where('uuid', $deviceUuid)->first();
-        if ($device && empty($zone)) {
+        $device = Device::where('uuid', $deviceUuid)->where('status', 1)->first();
+
+        if (!$device) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Device not found or inactive.',
+            ], 404);
+        }
+
+        if (empty($zone)) {
             $zone = $device->zone ?? null;
         }
 
-        // 2. Update ESP32 device last seen
-        if ($device) {
-            $device->update([
-                'last_seen_at' => $now,
-            ]);
-        }
+        $device->update([
+            'last_seen_at' => $now,
+        ]);
 
-        // 3. Look up employee by user_uuid = mobile beacon UUID
         $user = User::where('user_uuid', $mobileUuid)->first();
 
-        // 4. Write to presence_logs
         PresenceLog::create([
             'device_uuid' => $deviceUuid,
             'user_uuid'   => $mobileUuid,
@@ -53,7 +55,6 @@ class PresenceController extends Controller
             'status'      => $status,
         ]);
 
-        // 5. Return response
         return response()->json([
             'success' => true,
             'uuid'    => $mobileUuid,

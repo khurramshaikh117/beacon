@@ -65,7 +65,7 @@
                     @php
                         $presence = $member->latestPresence;
                         $hours    = $effectiveHours[$member->user_uuid] ?? ['effective' => '0h 0m', 'gross' => '0h 0m'];
-                        $isIn     = $presence && $presence->status === 1001;
+                        $isIn     = $presence?->isIn() ?? false;
                     @endphp
                     <tr>
                         <td>

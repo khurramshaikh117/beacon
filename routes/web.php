@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OperationsController;
 use App\Http\Controllers\DevicesController;
+use App\Http\Controllers\Api\DeviceConfigController;
 
 Route::get('/', fn () => redirect()->route('login'));
 

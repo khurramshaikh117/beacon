@@ -10,20 +10,26 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    private const DEVICE_ONLINE_MINUTES = 5;
+
     public function index(Request $request)
     {
         $search = trim((string) $request->query('q', ''));
         $today  = Carbon::today();
+        $onlineSince = Carbon::now()->subMinutes(self::DEVICE_ONLINE_MINUTES);
 
         // ── Stats ─────────────────────────────────────────────
-        $devicesOnline  = Device::where('status', 1)->count();
-        $totalMembers   = User::whereNotNull('user_uuid')->count();
+        $devicesOnline = Device::where('status', 1)
+            ->where('last_seen_at', '>=', $onlineSince)
+            ->count();
+
+        $totalMembers = User::trackedMembers()->count();
 
         // Members present = latest presence log today is IN (1001)
-        $membersIn = User::whereNotNull('user_uuid')
+        $membersIn = User::trackedMembers()
             ->whereHas('latestPresence', function ($q) use ($today) {
                 $q->whereDate('created_at', $today)
-                  ->where('status', 1001);
+                  ->where('status', PresenceLog::STATUS_IN);
             })->count();
 
         $membersOut = $totalMembers - $membersIn;
@@ -36,7 +42,7 @@ class DashboardController extends Controller
         ];
 
         // ── Member table ───────────────────────────────────────
-        $query = User::whereNotNull('user_uuid')
+        $query = User::trackedMembers()
             ->with(['latestPresence'])
             ->orderBy('name');
 
@@ -50,7 +56,6 @@ class DashboardController extends Controller
         $members = $query->paginate(10)->withQueryString();
 
         // ── Effective hours per member today ──────────────────
-        // Sum time between IN and OUT pairs per user today
         $effectiveHours = [];
         foreach ($members as $member) {
             $logs = PresenceLog::where('user_uuid', $member->user_uuid)
@@ -65,22 +70,22 @@ class DashboardController extends Controller
             $lastIn    = null;
 
             foreach ($logs as $log) {
-                if ($log->status === 1001) { // IN
+                if ($log->status === PresenceLog::STATUS_IN) {
                     $lastIn = $log->created_at;
-                    if (!$firstIn) $firstIn = $log->created_at;
-                } elseif ($log->status === 1002 && $lastIn) { // OUT
+                    if (!$firstIn) {
+                        $firstIn = $log->created_at;
+                    }
+                } elseif ($log->status === PresenceLog::STATUS_OUT && $lastIn) {
                     $effective += $lastIn->diffInMinutes($log->created_at);
                     $lastIn = null;
                 }
                 $lastSeen = $log->created_at;
             }
 
-            // If still IN — count until now
             if ($lastIn) {
                 $effective += $lastIn->diffInMinutes(Carbon::now());
             }
 
-            // Gross = first IN to last log
             if ($firstIn && $lastSeen) {
                 $gross = $firstIn->diffInMinutes($lastSeen);
             }
@@ -98,6 +103,7 @@ class DashboardController extends Controller
     {
         $h = intdiv($minutes, 60);
         $m = $minutes % 60;
+
         return "{$h}h {$m}m";
     }
 }

@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class PresenceLog extends Model
 {
+    public const STATUS_IN = 1001;
+
+    public const STATUS_OUT = 1002;
+
     protected $fillable = [
         'device_uuid',
         'user_uuid',
@@ -15,6 +19,7 @@ class PresenceLog extends Model
     ];
 
     protected $casts = [
+        'status'     => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -31,6 +36,6 @@ class PresenceLog extends Model
 
     public function isIn(): bool
     {
-        return $this->status === 1001;
+        return $this->status === self::STATUS_IN;
     }
 }
