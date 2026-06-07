@@ -55,6 +55,17 @@
     </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  @stack('scripts')
+<script>
+    // Remove stray Bootstrap modal backdrops that block clicks (hosting/extensions sometimes leave these behind)
+    function clearStuckOverlays() {
+        document.querySelectorAll('.modal-backdrop').forEach(function (el) { el.remove(); });
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+    }
+    document.addEventListener('DOMContentLoaded', clearStuckOverlays);
+    window.addEventListener('pageshow', clearStuckOverlays);
+</script>
+@stack('scripts')
 </body>
 </html>
