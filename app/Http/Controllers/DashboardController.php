@@ -43,7 +43,7 @@ class DashboardController extends Controller
 
         // ── Member table ───────────────────────────────────────
         $query = User::trackedMembers()
-            ->with(['latestPresence'])
+            ->with(['latestPresence.device'])
             ->orderBy('name');
 
         if ($search !== '') {
